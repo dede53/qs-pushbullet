@@ -1,4 +1,6 @@
 {
 	"name":"",
-	"dependencies":{}
+	"dependencies":{
+		"pushbullet":"1.4.3"
+	}
 }
