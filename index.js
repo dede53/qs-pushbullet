@@ -1,13 +1,9 @@
 var adapter 					= require('../../adapter-lib.js');
 var PushBullet 					= require('pushbullet');
-var variableFunctions			= require('../../app/functions/variable.js');
+// Das hier geht garnicht!!
+var variableFunctions			= require('../../../app/functions/variable.js');
 var lastMessage					= false;
-var pushbullet 					= new adapter({
-	"name": "pushbullet",
-	"loglevel": 1,
-	"description": "Sendet und emfängt Nachricht von Pushbullet.",
-	"settingsFile": "pushbullet.json"
-});
+var pushbullet 					= new adapter("pushbullet");
 
 var pusher 						= new PushBullet(pushbullet.settings.PushbulletAPIKey);
 
@@ -17,13 +13,17 @@ stream.connect();
 
 stream.on('connect', function() {
 	pushbullet.log.debug("Connected to Pushbullet");
+	process.send({"statusMessage":"Connected to Pushbullet"});
 });
 
 stream.on('close', function() { 
+	pushbullet.log.debug("Connected to Pushbullet lost");
+	process.send({"statusMessage":"Connection to Pushbullet lost!"});
 });
 
 stream.on('error', function(error) {
 	pushbullet.log.error("Error:" + error);
+	process.send({"statusMessage":"error:" + error});
 });
 
 stream.on('message', function(data){
@@ -46,7 +46,6 @@ stream.on('tickle', function(type) {
 				if(!response.pushes[0].title){
 					response.pushes[0].title = "Pushbullet";
 				}
-
 				pushbullet.setVariable('pushbullet.lastMessage.title', response.pushes[0].title);
 				pushbullet.setVariable('pushbullet.lastMessage.content', response.pushes[0].body);
 				pushbullet.setVariable('pushbullet.lastMessage.senderName', response.pushes[0].sender_name);
@@ -56,40 +55,45 @@ stream.on('tickle', function(type) {
 	});
 });
 
+// stream.on('push', function(data){
+	// pushbullet.log.error(data);
+// });
 
 process.on('message', function(data) {
-	var status = data.status;
-	var data = data.data;
-	sendPushMessage(status, data);
-	/*
-		{
-			"protocol": 		"send-pushbullet",
-			"title": 			"Titel",
-			"message": 			"Nachricht",
-			"receiver": 		"pushbullet iden"
-		}
-	*/
+	var data = JSON.parse(data);
+	pushbullet.log.error(data.protocol);
+	switch(data.protocol){
+		case "setSetting":
+			pushbullet.setSetting(data.setSetting.name, data.setSetting.status);
+			break;
+		case "send":
+			sendPushMessage(data);
+		default:
+			pushbullet.log.error(data);
+			break;
+	}
 });
 
-function sendPushMessage(status, data){
-	variableFunctions.replaceVar(data.message, function(nachricht){
-		variableFunctions.replaceVar(data.title, function(title){
+function sendPushMessage(data){
+	// variableFunctions.replaceVar(data.message, function(nachricht){
+	variableFunctions.replaceVar(data.data.message, function(nachricht){
+		variableFunctions.replaceVar(data.data.title, function(title){
 			data.message = nachricht;
 			data.title = title;
 			data.source_device_iden = pushbullet.settings.QSiden;
-			pushMessage(data, pusher);
+			pushMessage(data);
 		});
 	});
 }
 
-function pushMessage(data, pusher){
+function pushMessage(data){
 	pushbullet.checkDevice(function(){
 		var options = {
 			'receiver_iden': data.receiver,
 			'source_device_iden': data.source_device_iden
 		}
 		pusher.note( options , data.title , data.message , function(error, response) {
-			console.log("Erfolgreich gesendet: " + data.message);
+			pushbullet.log.error("Erfolgreich gesendet: " + data.message);
 		});
 	});
 }
