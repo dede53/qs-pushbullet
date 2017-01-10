@@ -1,4 +1,5 @@
 {
-	"PushbulletAPIKey":"password",
-	"source_device_iden":""
+	"PushbulletAPIKey":"api-key",
+	"source_device_iden":"",
+	"loglevel":1
 }
