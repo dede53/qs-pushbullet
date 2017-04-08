@@ -1,5 +1,6 @@
 {
 	"PushbulletAPIKey":"api-key",
 	"source_device_iden":"",
+	"version":"0.0.1",
 	"loglevel":1
 }
