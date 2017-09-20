@@ -46,9 +46,11 @@ stream.on('tickle', function(type) {
 				if(!response.pushes[0].title){
 					response.pushes[0].title = "Pushbullet";
 				}
+				pushbullet.log.debug(response.pushes[0]);
 				pushbullet.setVariable('pushbullet.lastMessage.title', response.pushes[0].title);
 				pushbullet.setVariable('pushbullet.lastMessage.content', response.pushes[0].body);
 				pushbullet.setVariable('pushbullet.lastMessage.senderName', response.pushes[0].sender_name);
+				pushbullet.setVariable('pushbullet.lastMessage.iden', response.pushes[0].iden);
 				lastMessage = response.pushes[0].body;
 			}
 		}
