@@ -62,8 +62,6 @@ stream.on('tickle', function(type) {
 // });
 
 process.on('message', function(data) {
-	var data = JSON.parse(data);
-	pushbullet.log.error(data.protocol);
 	switch(data.protocol){
 		case "setSetting":
 			pushbullet.setSetting(data.setSetting.name, data.setSetting.status);
@@ -78,8 +76,8 @@ process.on('message', function(data) {
 
 function sendPushMessage(data){
 	// variableFunctions.replaceVar(data.message, function(nachricht){
-	variableFunctions.replaceVar(data.data.message, function(nachricht){
-		variableFunctions.replaceVar(data.data.title, function(title){
+	variableFunctions.replaceVar(data.message, function(nachricht){
+		variableFunctions.replaceVar(data.title, function(title){
 			data.message = nachricht;
 			data.title = title;
 			data.source_device_iden = pushbullet.settings.QSiden;
