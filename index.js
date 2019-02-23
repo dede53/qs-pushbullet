@@ -61,7 +61,7 @@ stream.on('tickle', function(type) {
 	// pushbullet.log.error(data);
 // });
 
-process.on('message', function(data) {
+pushbullet.on('pushbullet', function(data) {
 	switch(data.protocol){
 		case "setSetting":
 			pushbullet.setSetting(data.setSetting.name, data.setSetting.status);
