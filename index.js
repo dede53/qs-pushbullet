@@ -89,7 +89,7 @@ function sendPushMessage(data){
 function pushMessage(data){
 	pushbullet.checkDevice(function(){
 		var options = {
-			'receiver_iden': data.receiver,
+			'receiver_iden': data.user,
 			'source_device_iden': data.source_device_iden
 		}
 		pusher.note( options , data.title , data.message , function(error, response) {
